@@ -87,8 +87,8 @@
 /*
 ** SDL related defines, Variables and params
 */
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH  640
+#define SCREEN_HEIGHT 480
 
 static SDL_Surface *screen0, *screen1, *sdl_fontbuf;
 static SDL_Surface *modescreen;	/* Buffer used when screen mode is scaled to fit real screen */
