@@ -1,20 +1,20 @@
 # Example programs
 
-Filename  | Description
-:-------- | :------------------------------------------------------------------
-cmdline   | Reads parameters from the command line used to start the interpreter
-combsort  | Compares a comb sort and a bubble sort
-cricket   | Simulates a game of cricket
-dow       | Prints the day of the week for the given date
-graphdemo | Plots a graph
-hanoi     | Solves the 'Ttowers of Hanoi' puzzle
-hex       | Solves the 'hex' puzzle
-lands     | Plots a simple fractal landscape
-pastriang | Draws Pascal's triangle
-sieve     | Sieve of Eratosthenes
-tekdemo1  | Graphics demo using the Tektronics terminal emulation in xterm under NetBSD and Linux
-tekdemo2  | Graphics demo using the Tektronics terminal emulation in xterm under NetBSD and Linux
-teklib    | Library of procedures used by the two Tektronics demo programs
-trees1    | Create a binary tree
-trees2    | Create a binary tree using indirection operators
-tvtime    | A simple adventure game
+Filename        | Description
+:-------------- | :------------------------------------------------------------------
+`cmdline.bas`   | Reads parameters from the command line used to start the interpreter
+`combsort.bas`  | Compares a comb sort and a bubble sort
+`cricket.bas`   | Simulates a game of cricket
+`dow.bas`       | Prints the day of the week for the given date
+`graphdemo.bas` | Plots a graph
+`hanoi.bas`     | Solves the 'Ttowers of Hanoi' puzzle
+`hex.bas`       | Solves the 'hex' puzzle
+`lands.bas`     | Plots a simple fractal landscape
+`pastriang.bas` | Draws Pascal's triangle
+`sieve.bas`     | Sieve of Eratosthenes
+`tekdemo1.bas`  | Graphics demo using the Tektronics terminal emulation in xterm under NetBSD and Linux
+`tekdemo2.bas`  | Graphics demo using the Tektronics terminal emulation in xterm under NetBSD and Linux
+`teklib.bas`    | Library of procedures used by the two Tektronics demo programs
+`trees1.bas`    | Create a binary tree
+`trees2.bas`    | Create a binary tree using indirection operators
+`tvtime.bas`    | A simple adventure game
