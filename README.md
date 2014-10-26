@@ -1,4 +1,4 @@
-Brandy 1.20.1 + brandy-osx-sdl-support.patch
+Brandy 1.20.1 + [brandy-osx-sdl-support.patch](http://sourceforge.net/p/brandy/patches/9/)
 --------------------------------------------
 
 This version uses the [SDL](http://www.libsdl.org/) graphics library.
