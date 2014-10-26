@@ -12,9 +12,6 @@ Filename        | Description
 `lands.bas`     | Plots a simple fractal landscape
 `pastriang.bas` | Draws Pascal's triangle
 `sieve.bas`     | Sieve of Eratosthenes
-`tekdemo1.bas`  | Graphics demo using the Tektronics terminal emulation in xterm under NetBSD and Linux
-`tekdemo2.bas`  | Graphics demo using the Tektronics terminal emulation in xterm under NetBSD and Linux
-`teklib.bas`    | Library of procedures used by the two Tektronics demo programs
 `trees1.bas`    | Create a binary tree
 `trees2.bas`    | Create a binary tree using indirection operators
 `tvtime.bas`    | A simple adventure game
