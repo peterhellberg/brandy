@@ -4,6 +4,9 @@ Brandy 1.20.1 + brandy-osx-sdl-support.patch
 This version uses the [SDL](http://www.libsdl.org/) graphics library.
 The file `docs/history` lists what has been done.
 
+![graphdemo.bas](http://assets.c7.se/skitch/Brandy_Basic_V_Interpreter_-_graphdemo.bas-20141026-120928.png)
+![pastriang.bas](http://assets.c7.se/skitch/Brandy_Basic_V_Interpreter_-_pastriang.bas-20141026-120124.png)
+
 ## Dependencies
 
 You need to have SDL installed in order to compile Brandy.
