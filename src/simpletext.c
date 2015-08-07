@@ -34,7 +34,10 @@
 #include "target.h"
 #include "errors.h"
 #include "basicdefs.h"
+
+#define SIMPLETEXT 1
 #include "scrcommon.h"
+
 #include "screen.h"
 
 /*
@@ -91,7 +94,7 @@ void echo_off(void) {
 ** If the flag 'flag_cosmetic' is set then an error is flagged;
 ** the feature is otherwise silently ignored
 */
-static nogo(void) {
+static void nogo(void) {
   if (basicvars.runflags.flag_cosmetic) error(ERR_UNSUPPORTED);
 }
 /*

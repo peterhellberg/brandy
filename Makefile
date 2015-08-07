@@ -3,12 +3,12 @@
 CC = gcc
 LD = gcc
 
-CFLAGS += -g -DDEBUG -I/usr/local/include/SDL -DUSE_SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE
-CFLAGS2 = -O2 -I/usr/local/include/SDL -DUSE_SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE
+CFLAGS += -g -DDEBUG $(shell sdl-config --cflags) -DUSE_SDL -D_GNU_SOURCE=1
+CFLAGS2 = -O2 $(shell sdl-config --cflags) -DUSE_SDL -D_GNU_SOURCE=1
 
 LDFLAGS +=
 
-LIBS = -lm -L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa
+LIBS = -lm $(shell sdl-config --libs)
 
 SRCDIR = src
 
@@ -19,7 +19,7 @@ OBJ = $(SRCDIR)/variables.o $(SRCDIR)/tokens.o $(SRCDIR)/graphsdl.o \
 	$(SRCDIR)/functions.o $(SRCDIR)/fileio.o $(SRCDIR)/evaluate.o \
 	$(SRCDIR)/errors.o $(SRCDIR)/emulate.o $(SRCDIR)/editor.o \
 	$(SRCDIR)/convert.o $(SRCDIR)/commands.o $(SRCDIR)/brandy.o \
-	$(SRCDIR)/assign.o $(SRCDIR)/geom.o $(SRCDIR)/SDLMain.o
+	$(SRCDIR)/assign.o $(SRCDIR)/geom.o
 
 SRC = $(SRCDIR)/variables.c $(SRCDIR)/tokens.c $(SRCDIR)/graphsdl.c \
 	$(SRCDIR)/strings.c $(SRCDIR)/statement.c $(SRCDIR)/stack.c \
@@ -56,9 +56,6 @@ GSDL_C = $(SRCDIR)/common.h $(SRCDIR)/target.h $(SRCDIR)/basicdefs.h \
 
 $(SRCDIR)/graphsdl.o: $(GSDL_C) $(SRCDIR)/graphsdl.c
 	$(CC) $(CFLAGS) $(SRCDIR)/graphsdl.c -c -o $(SRCDIR)/graphsdl.o
-
-$(SRCDIR)/SDLMain.o: src/SDLMain.h src/SDLMain.m
-	$(CC) $(CFLAGS) $(SRCDIR)/SDLMain.m -c -o $(SRCDIR)/SDLMain.o
 
 # Build GEOM.C
 GEOM_C = $(SRCDIR)/target.h

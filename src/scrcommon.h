@@ -71,6 +71,7 @@ typedef struct {
   boolean graphics;		/* TRUE if this mode supports graphics */
 } modetails;
 
+#ifndef SIMPLETEXT
 /*
 ** The mode details table gives details of all the numbered RISC OS
 ** screen modes
@@ -124,6 +125,7 @@ static modetails modetable [] = {
 /* 45 */  { 640, 200,   4, 1280,   800,  80, 25, 1, 2,  TRUE},
 /* 46 */  { 640, 200,  16, 1280,   800,  80, 25, 1, 2,  TRUE}
 };
+#endif	// SIMPLETEXT
 
 #ifndef __riscos
 static int32 vdubytes [] = {	/* Number of bytes of data needed for each VDU command */
@@ -165,10 +167,8 @@ static int32 vdubytes [] = {	/* Number of bytes of data needed for each VDU comm
 
 
 static int32
-  vducmd,			/* Current VDU command */
-  vdunext,			/* Index of next entry in VDU queue */
-  vduneeded,			/* Number of bytes needed for current VDU command */
-  screenmode,			/* Current screen mode */
+
+#ifndef SIMPLETEXT
   colourdepth,			/* Number of colours allowed in current screen mode */
   colourmask,			/* Mask to isolate logical colour number */
   text_forecol,			/* Current text foreground logical colour number */
@@ -188,20 +188,33 @@ static int32
   twintop,			/* Row number of top of text window */
   twinbottom,			/* Row number of bottom of text window */
   xtext,			/* Text cursor X coordinate (real on-screen location) */
-  ytext;			/* Text cursor Y coordinate (real on-screen location) */
+  ytext,			/* Text cursor Y coordinate (real on-screen location) */
+#endif	// SIMPLETEXT
+
+  vducmd,			/* Current VDU command */
+  vdunext,			/* Index of next entry in VDU queue */
+  vduneeded,			/* Number of bytes needed for current VDU command */
+  screenmode;			/* Current screen mode */
 
 static boolean
+
+#ifndef SIMPLETEXT
   enable_vdu,			/* TRUE if VDU driver is enable */
   enable_print,			/* TRUE if sending characters to the printer stream is enabled */
-  echo,				/* TRUE if character should be echoed on screen immediately */
-  textwin;			/* TRUE if a text window has been defined */
+  textwin,			/* TRUE if a text window has been defined */
+#endif
 
+  echo;				/* TRUE if character should be echoed on screen immediately */
+
+#ifndef SIMPLETEXT
 static curstype cursmode;	/* Type of cursor being displayed in graphics mode */
 
 static curstate cursorstate;	/* Whether cursor is shown */
+#endif
 
 static byte vduqueue[MAXBYTES];	/* Queue to hold data for VDU commands */
 
+#ifndef SIMPLETEXT
 /*
 ** The logical-to-physical table maps the RISC OS logical colours to
 ** RISC OS physical colours. This is used for 2, 4 and 16 colour modes.
@@ -210,6 +223,7 @@ static byte vduqueue[MAXBYTES];	/* Queue to hold data for VDU commands */
 ** equivalents under the other OSes.
 */
 static int32 logtophys[16];
+#endif
 
 #endif
 

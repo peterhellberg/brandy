@@ -1542,7 +1542,7 @@ boolean init_keyboard(void) {
   keyboard = fileno(stdin);
   errcode = tcgetattr(keyboard, &tty);
   if (errcode < 0) {    /* Could not obtain keyboard parameters */
-    if (errno != ENOTTY) return FALSE;  /* tcgetattr() returned an error we cannot handle */
+    if (errno != ENOTTY && errno != EOPNOTSUPP) return FALSE;  /* tcgetattr() returned an error we cannot handle */
 /*
 ** The error returned by tcgetattr() was ENOTTY (not a typewriter).
 ** This says that stdin is not associated with a keyboard. The

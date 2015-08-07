@@ -27,6 +27,9 @@
 #include <ctype.h>
 #include "common.h"
 #include "target.h"
+#ifdef USE_SDL
+#include <SDL.h>
+#endif
 #include "basicdefs.h"
 #include "tokens.h"
 #include "errors.h"
