@@ -4,7 +4,9 @@ CC = gcc
 LD = gcc
 
 CFLAGS += -g -DDEBUG $(shell sdl-config --cflags) -DUSE_SDL -D_GNU_SOURCE=1
-CFLAGS2 = -Os -fomit-frame-pointer -pipe -Wall -DNDEBUG -D_GNU_SOURCE=1
+
+# Should manually remove XOPEN_SOURCE for Windows targets
+CFLAGS2 = -Os -fomit-frame-pointer -pipe -Wall -DNDEBUG -D_XOPEN_SOURCE=600
 
 LDFLAGS +=
 
