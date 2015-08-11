@@ -4,31 +4,41 @@ CC = gcc
 LD = gcc
 
 CFLAGS += -g -DDEBUG $(shell sdl-config --cflags) -DUSE_SDL -D_GNU_SOURCE=1
-CFLAGS2 = -O2 $(shell sdl-config --cflags) -DUSE_SDL -D_GNU_SOURCE=1
+CFLAGS2 = -Os -fomit-frame-pointer -pipe -Wall -DNDEBUG -D_GNU_SOURCE=1
 
 LDFLAGS +=
 
-LIBS = -lm $(shell sdl-config --libs)
+LIBS = -lm
+
+GUI ?= sdl
+ifeq ($(GUI),console)
+	CFLAGS2 += -DNO_SDL
+else
+ifeq ($(GUI),sdl)
+	CFLAGS2 += $(shell sdl-config --cflags) -DUSE_SDL
+	LIBS += $(shell sdl-config --libs)
+endif
+endif
 
 SRCDIR = src
 
-OBJ = $(SRCDIR)/variables.o $(SRCDIR)/tokens.o $(SRCDIR)/graphsdl.o \
+OBJ = $(SRCDIR)/variables.o $(SRCDIR)/tokens.o \
 	$(SRCDIR)/strings.o $(SRCDIR)/statement.o $(SRCDIR)/stack.o \
 	$(SRCDIR)/miscprocs.o $(SRCDIR)/mainstate.o $(SRCDIR)/lvalue.o \
 	$(SRCDIR)/keyboard.o $(SRCDIR)/iostate.o $(SRCDIR)/heap.o \
 	$(SRCDIR)/functions.o $(SRCDIR)/fileio.o $(SRCDIR)/evaluate.o \
 	$(SRCDIR)/errors.o $(SRCDIR)/emulate.o $(SRCDIR)/editor.o \
 	$(SRCDIR)/convert.o $(SRCDIR)/commands.o $(SRCDIR)/brandy.o \
-	$(SRCDIR)/assign.o $(SRCDIR)/geom.o
+	$(SRCDIR)/assign.o
 
-SRC = $(SRCDIR)/variables.c $(SRCDIR)/tokens.c $(SRCDIR)/graphsdl.c \
+SRC = $(SRCDIR)/variables.c $(SRCDIR)/tokens.c \
 	$(SRCDIR)/strings.c $(SRCDIR)/statement.c $(SRCDIR)/stack.c \
 	$(SRCDIR)/miscprocs.c $(SRCDIR)/mainstate.c $(SRCDIR)/lvalue.c \
 	$(SRCDIR)/keyboard.c $(SRCDIR)/iostate.c $(SRCDIR)/heap.c \
 	$(SRCDIR)/functions.c $(SRCDIR)/fileio.c $(SRCDIR)/evaluate.c \
 	$(SRCDIR)/errors.c $(SRCDIR)/emulate.c $(SRCDIR)/editor.c \
 	$(SRCDIR)/convert.c $(SRCDIR)/commands.c $(SRCDIR)/brandy.c \
-	$(SRCDIR)/assign.c $(SRCDIR)/geom.c
+	$(SRCDIR)/assign.c
 
 brandy:	$(OBJ)
 	$(LD) $(LDFLAGS) -o brandy $(OBJ) $(LIBS)
@@ -239,14 +249,24 @@ $(SRCDIR)/assign.o: $(ASSIGN_C) $(SRCDIR)/assign.c
 recompile:
 	$(CC) $(CFLAGS) $(SRC) $(LIBS) -o brandy
 
+.PHONY: nodebug
 nodebug:
-	$(CC) $(CFLAGS2) $(SRC) $(LIBS) -o brandy
+ifeq ($(GUI),console)
+	$(CC) $(CFLAGS2) $(SRC) src/textonly.c $(LIBS) -o tbrandy
+	strip tbrandy
+	$(CC) $(CFLAGS2) $(SRC) src/simpletext.c $(LIBS) -o sbrandy
+	strip sbrandy
+else
+ifeq ($(GUI),sdl)
+	$(CC) $(CFLAGS2) $(SRC) src/graphsdl.c src/geom.c $(LIBS) -o brandy
 	strip brandy
+endif
+endif
 
 check:
 	$(CC) $(CFLAGS) -Wall -O2 $(SRC) $(LIBS) -o brandy
 
 clean:
-	rm -f $(SRCDIR)/*.o brandy
+	-rm -f $(SRCDIR)/*.o brandy tbrandy sbrandy
 
 all:	brandy

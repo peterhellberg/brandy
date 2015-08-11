@@ -121,7 +121,6 @@ typedef double float64;			/* Type for 64-bit floating point variables in Basic *
 #define TARGET_MACOSX
 #define TARGET_UNIX
 #define BRANDY_OS "MacOS X"
-#define USE_SDL
 #endif
 
 #if defined(_AMIGA) || defined(__amigaos__)

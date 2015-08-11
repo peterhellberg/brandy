@@ -67,7 +67,7 @@ static struct loadlib {char *name; struct loadlib *next;} *liblist, *liblast;
 ** 'run_interpreter' is called. The program finishes when 'exec_quit'
 ** (in statement.c) is invoked. 'exec_quit' handles the 'QUIT' command
 */
-int SDL_main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
   init1();
   check_cmdline(argc, argv);
   init2();
