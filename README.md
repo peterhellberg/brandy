@@ -15,9 +15,14 @@ You need to have SDL installed in order to compile Brandy.
 brew install sdl
 ```
 
+## Compilation
+
+GUI version: `make nodebug`
+CLI version: `make nodebug GUI=console`
+
 ## Installation
 
-Just `make` and copy the compiled `brandy` binary to somewhere in your `PATH`
+Just copy the compiled binaries to somewhere in your `PATH`
 
 ## Files
 
