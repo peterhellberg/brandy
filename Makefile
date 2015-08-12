@@ -1,9 +1,8 @@
 # Makefile for brandy under NetBSD and Linux
 
-CC = gcc
-LD = gcc
+LD := clang
 
-CFLAGS += -g -DDEBUG $(shell sdl-config --cflags) -DUSE_SDL -D_GNU_SOURCE=1
+CFLAGS += -ggdb3 -DDEBUG $(shell sdl-config --cflags) -DUSE_SDL -D_XOPEN_SOURCE=600
 
 # Should manually remove XOPEN_SOURCE for Windows targets
 CFLAGS2 = -Os -fomit-frame-pointer -pipe -Wall -DNDEBUG -D_XOPEN_SOURCE=600
@@ -14,9 +13,11 @@ LIBS = -lm
 
 GUI ?= sdl
 ifeq ($(GUI),console)
+	CFLAGS += -DNO_SDL
 	CFLAGS2 += -DNO_SDL
 else
 ifeq ($(GUI),sdl)
+	CFLAGS += $(shell sdl-config --cflags) -DUSE_SDL
 	CFLAGS2 += $(shell sdl-config --cflags) -DUSE_SDL
 	LIBS += $(shell sdl-config --libs)
 endif
@@ -42,8 +43,19 @@ SRC = $(SRCDIR)/variables.c $(SRCDIR)/tokens.c \
 	$(SRCDIR)/convert.c $(SRCDIR)/commands.c $(SRCDIR)/brandy.c \
 	$(SRCDIR)/assign.c
 
-brandy:	$(OBJ)
-	$(LD) $(LDFLAGS) -o brandy $(OBJ) $(LIBS)
+ifeq ($(GUI),console)
+.PHONY: all
+all: tbrandy sbrandy
+tbrandy: $(OBJ) $(SRCDIR)/textonly.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+sbrandy: $(OBJ) $(SRCDIR)/simpletext.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+else
+ifeq ($(GUI),sdl)
+brandy:	$(OBJ) $(SRCDIR)/graphsdl.o $(SRCDIR)/geom.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+endif
+endif
 
 # Build VARIABLES.C
 VARIABLES_C = $(SRCDIR)/common.h $(SRCDIR)/target.h $(SRCDIR)/basicdefs.h \
@@ -254,13 +266,13 @@ recompile:
 .PHONY: nodebug
 nodebug:
 ifeq ($(GUI),console)
-	$(CC) $(CFLAGS2) $(SRC) src/textonly.c $(LIBS) -o tbrandy
+	$(CC) $(CFLAGS2) $(SRC) $(SRCDIR)/textonly.c $(LIBS) -o tbrandy
 	strip tbrandy
-	$(CC) $(CFLAGS2) $(SRC) src/simpletext.c $(LIBS) -o sbrandy
+	$(CC) $(CFLAGS2) $(SRC) $(SRCDIR)/simpletext.c $(LIBS) -o sbrandy
 	strip sbrandy
 else
 ifeq ($(GUI),sdl)
-	$(CC) $(CFLAGS2) $(SRC) src/graphsdl.c src/geom.c $(LIBS) -o brandy
+	$(CC) $(CFLAGS2) $(SRC) $(SRCDIR)/graphsdl.c $(SRCDIR)/geom.c $(LIBS) -o brandy
 	strip brandy
 endif
 endif
@@ -270,5 +282,3 @@ check:
 
 clean:
 	-rm -f $(SRCDIR)/*.o brandy tbrandy sbrandy
-
-all:	brandy
