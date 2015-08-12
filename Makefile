@@ -1,37 +1,61 @@
 # Makefile for brandy under NetBSD and Linux
 
-CC = gcc
-LD = gcc
+LD := clang
 
-CFLAGS += -g -DDEBUG -I/usr/local/include/SDL -DUSE_SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE
-CFLAGS2 = -O2 -I/usr/local/include/SDL -DUSE_SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE
+CFLAGS += -ggdb3 -DDEBUG $(shell sdl-config --cflags) -DUSE_SDL -D_XOPEN_SOURCE=600
+
+# Should manually remove XOPEN_SOURCE for Windows targets
+CFLAGS2 = -Os -fomit-frame-pointer -pipe -Wall -DNDEBUG -D_XOPEN_SOURCE=600
 
 LDFLAGS +=
 
-LIBS = -lm -L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa
+LIBS = -lm
+
+GUI ?= sdl
+ifeq ($(GUI),console)
+	CFLAGS += -DNO_SDL
+	CFLAGS2 += -DNO_SDL
+else
+ifeq ($(GUI),sdl)
+	CFLAGS += $(shell sdl-config --cflags) -DUSE_SDL
+	CFLAGS2 += $(shell sdl-config --cflags) -DUSE_SDL
+	LIBS += $(shell sdl-config --libs)
+endif
+endif
 
 SRCDIR = src
 
-OBJ = $(SRCDIR)/variables.o $(SRCDIR)/tokens.o $(SRCDIR)/graphsdl.o \
+OBJ = $(SRCDIR)/variables.o $(SRCDIR)/tokens.o \
 	$(SRCDIR)/strings.o $(SRCDIR)/statement.o $(SRCDIR)/stack.o \
 	$(SRCDIR)/miscprocs.o $(SRCDIR)/mainstate.o $(SRCDIR)/lvalue.o \
 	$(SRCDIR)/keyboard.o $(SRCDIR)/iostate.o $(SRCDIR)/heap.o \
 	$(SRCDIR)/functions.o $(SRCDIR)/fileio.o $(SRCDIR)/evaluate.o \
 	$(SRCDIR)/errors.o $(SRCDIR)/emulate.o $(SRCDIR)/editor.o \
 	$(SRCDIR)/convert.o $(SRCDIR)/commands.o $(SRCDIR)/brandy.o \
-	$(SRCDIR)/assign.o $(SRCDIR)/geom.o $(SRCDIR)/SDLMain.o
+	$(SRCDIR)/assign.o
 
-SRC = $(SRCDIR)/variables.c $(SRCDIR)/tokens.c $(SRCDIR)/graphsdl.c \
+SRC = $(SRCDIR)/variables.c $(SRCDIR)/tokens.c \
 	$(SRCDIR)/strings.c $(SRCDIR)/statement.c $(SRCDIR)/stack.c \
 	$(SRCDIR)/miscprocs.c $(SRCDIR)/mainstate.c $(SRCDIR)/lvalue.c \
 	$(SRCDIR)/keyboard.c $(SRCDIR)/iostate.c $(SRCDIR)/heap.c \
 	$(SRCDIR)/functions.c $(SRCDIR)/fileio.c $(SRCDIR)/evaluate.c \
 	$(SRCDIR)/errors.c $(SRCDIR)/emulate.c $(SRCDIR)/editor.c \
 	$(SRCDIR)/convert.c $(SRCDIR)/commands.c $(SRCDIR)/brandy.c \
-	$(SRCDIR)/assign.c $(SRCDIR)/geom.c
+	$(SRCDIR)/assign.c
 
-brandy:	$(OBJ)
-	$(LD) $(LDFLAGS) -o brandy $(OBJ) $(LIBS)
+ifeq ($(GUI),console)
+.PHONY: all
+all: tbrandy sbrandy
+tbrandy: $(OBJ) $(SRCDIR)/textonly.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+sbrandy: $(OBJ) $(SRCDIR)/simpletext.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+else
+ifeq ($(GUI),sdl)
+brandy:	$(OBJ) $(SRCDIR)/graphsdl.o $(SRCDIR)/geom.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+endif
+endif
 
 # Build VARIABLES.C
 VARIABLES_C = $(SRCDIR)/common.h $(SRCDIR)/target.h $(SRCDIR)/basicdefs.h \
@@ -56,9 +80,6 @@ GSDL_C = $(SRCDIR)/common.h $(SRCDIR)/target.h $(SRCDIR)/basicdefs.h \
 
 $(SRCDIR)/graphsdl.o: $(GSDL_C) $(SRCDIR)/graphsdl.c
 	$(CC) $(CFLAGS) $(SRCDIR)/graphsdl.c -c -o $(SRCDIR)/graphsdl.o
-
-$(SRCDIR)/SDLMain.o: src/SDLMain.h src/SDLMain.m
-	$(CC) $(CFLAGS) $(SRCDIR)/SDLMain.m -c -o $(SRCDIR)/SDLMain.o
 
 # Build GEOM.C
 GEOM_C = $(SRCDIR)/target.h
@@ -242,14 +263,22 @@ $(SRCDIR)/assign.o: $(ASSIGN_C) $(SRCDIR)/assign.c
 recompile:
 	$(CC) $(CFLAGS) $(SRC) $(LIBS) -o brandy
 
+.PHONY: nodebug
 nodebug:
-	$(CC) $(CFLAGS2) $(SRC) $(LIBS) -o brandy
+ifeq ($(GUI),console)
+	$(CC) $(CFLAGS2) $(SRC) $(SRCDIR)/textonly.c $(LIBS) -o tbrandy
+	strip tbrandy
+	$(CC) $(CFLAGS2) $(SRC) $(SRCDIR)/simpletext.c $(LIBS) -o sbrandy
+	strip sbrandy
+else
+ifeq ($(GUI),sdl)
+	$(CC) $(CFLAGS2) $(SRC) $(SRCDIR)/graphsdl.c $(SRCDIR)/geom.c $(LIBS) -o brandy
 	strip brandy
+endif
+endif
 
 check:
 	$(CC) $(CFLAGS) -Wall -O2 $(SRC) $(LIBS) -o brandy
 
 clean:
-	rm -f $(SRCDIR)/*.o brandy
-
-all:	brandy
+	-rm -f $(SRCDIR)/*.o brandy tbrandy sbrandy

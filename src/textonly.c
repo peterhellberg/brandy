@@ -32,6 +32,10 @@
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
+#if defined(unix) || defined(__unix__) || defined(__unix) || \
+	(defined(__APPLE__) && defined(__MACH__))
+#include <termios.h>
+#endif
 #include "common.h"
 #include "target.h"
 #include "errors.h"
@@ -40,7 +44,7 @@
 #include "screen.h"
 #include "keyboard.h"
 
-#if defined(TARGET_WIN32) | defined(TARGET_DJGPP) | defined(TARGET_BCC32) | defined(TARGET_MACOSX) | defined(TARGET_MINGW)
+#if defined(TARGET_WIN32) | defined(TARGET_DJGPP) | defined(TARGET_BCC32) | defined(TARGET_MINGW)
 #include "conio.h"
 #else
 #define USE_ANSI        /* Have to use ANSI control sequences, not conio */
@@ -442,11 +446,13 @@ void clrscr(void) {
 ** global for the opposite of their own name
 ** -- conio (Win32) --
 */
+void
 textcolor(int32 colour) {
   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (colour << FG_TEXT_ATTRIB_SHIFT) |
                                                            (text_physbackcol << BG_TEXT_ATTRIB_SHIFT));
 }
 
+void
 textbackground(int32 colour) {
   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (text_physforecol << FG_TEXT_ATTRIB_SHIFT) |
                                                            (colour << BG_TEXT_ATTRIB_SHIFT));
@@ -461,7 +467,6 @@ textbackground(int32 colour) {
 ** -- conio --
 */
 static void scroll_text(updown direction) {
-  int n;
   if (!textwin && direction==SCROLL_UP)         /* Text window is the whole screen and scrolling is upwards */
     putch('\n');        /* Output a linefeed */
   else {        /* Writing to a text window */
@@ -748,7 +753,7 @@ static void vdu_textwind(void) {
     bottom = top;
     top = temp;
   }
-  if (left>=textwidth || SCRHEIGHT!=0 && top>=textheight) return;       /* Ignore bad parameters */
+  if (left>=textwidth || (SCRHEIGHT!=0 && top>=textheight)) return;       /* Ignore bad parameters */
   twinleft = left;
   twinright = right;
   twintop = top;
@@ -1017,7 +1022,7 @@ static void vdu_movetext(void) {
   int32 column, row;
   column = vduqueue[0]+twinleft;
   row = vduqueue[1]+twintop;
-  if (column>twinright || SCRHEIGHT!=0 && row>twinbottom) return;       /* Ignore command if values are out of range */
+  if (column>twinright || (SCRHEIGHT!=0 && row>twinbottom)) return;       /* Ignore command if values are out of range */
   move_cursor(column, row);
 }
 

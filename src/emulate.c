@@ -574,9 +574,8 @@ void emulate_setime(int32 time) {
 int32 emulate_time(void) {
   unsigned int rc;
   struct timeval tv;
-  struct timezone tzp;
 
-  gettimeofday (&tv, &tzp);
+  gettimeofday (&tv, NULL);
 
   /* tv -> tv_sec = Seconds since 1970 */
   /* tv -> tv_usec = and microseconds */
@@ -852,7 +851,7 @@ static void emulate_key(char *command) {
  * hence the stupid check for the same character twice.
  * Note that the decoding of escape characters is incomplete
  */
-    if (ch == '|' || ch == 'Ý') {
+    if (ch == '|') {
       ch = *command;
       command++;
       if (ch == 0) error(ERR_EMUCMDFAIL, "Character missing after '|' in key string");

@@ -50,7 +50,7 @@ typedef double float64;			/* Type for 64-bit floating point variables in Basic *
 ** the compilation of OS-specific parts of the program.
 */
 
-#ifdef __unix
+#if defined(unix) || defined(__unix__) || defined(__unix)
 #define TARGET_UNIX
 #endif
 
@@ -61,6 +61,7 @@ typedef double float64;			/* Type for 64-bit floating point variables in Basic *
 
 #ifdef __NetBSD__
 #define TARGET_NETBSD
+#define TARGET_UNIX
 #define BRANDY_OS "NetBSD"
 #endif
 
@@ -118,8 +119,8 @@ typedef double float64;			/* Type for 64-bit floating point variables in Basic *
 
 #if defined(__GNUC__) && ( defined(__APPLE_CPP__) || defined(__APPLE_CC__) )
 #define TARGET_MACOSX
+#define TARGET_UNIX
 #define BRANDY_OS "MacOS X"
-#define USE_SDL
 #endif
 
 #if defined(_AMIGA) || defined(__amigaos__)
@@ -182,7 +183,7 @@ typedef double float64;			/* Type for 64-bit floating point variables in Basic *
 #define DEFAULT_EDITOR "vi"
 #elif defined(TARGET_MACOSX)
 #define EDITOR_VARIABLE "EDITOR"
-#define DEFAULT_EDITOR "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
+#define DEFAULT_EDITOR "/usr/bin/vi"
 #elif defined(TARGET_RISCOS)
 #define EDITOR_VARIABLE "Brandy$$Editor"
 #define DEFAULT_EDITOR "filer_run"

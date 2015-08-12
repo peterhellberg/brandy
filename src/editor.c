@@ -217,7 +217,7 @@ static boolean isvalidprog(void) {
 ** pointer to 'safe' values)
 */
 void recover_program(void) {
-  byte *bp;
+  byte *bp = NULL;
   if (basicvars.misc_flags.validsaved) {	/* Only check if the command 'new' has been used */
     reinstate();		/* Restore start of program */
     bp = basicvars.start;
